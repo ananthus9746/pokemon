@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { collection, query, orderBy, getDocs } from "firebase/firestore";
 import { firestore } from "../../firebase";
+import style from './ImageList.module.css'
 
 const ImageList = ({ uploadCompleted }) => {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -13,16 +15,11 @@ const ImageList = ({ uploadCompleted }) => {
                 const q = query(collection(firestore, "images"), orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
 
-                // console.log("Firestore snapshot:", snapshot);
-                // console.log("Docs array:", snapshot.docs);
-
                 const imagesData = snapshot.docs.map((doc) => {
                     const data = doc.data();
-                    // console.log(`Document ID: ${doc.id}`, data);
                     return { id: doc.id, ...data };
                 });
 
-                // console.log("Fetched imagesData:", imagesData);
                 setImages(imagesData);
             } catch (err) {
                 console.error("Error fetching images:", err);
@@ -35,6 +32,14 @@ const ImageList = ({ uploadCompleted }) => {
         fetchData();
     }, [uploadCompleted]);
 
+    const openModal = (image) => {
+        setSelectedImage(image);
+    };
+
+    const closeModal = () => {
+        setSelectedImage(null);
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -45,15 +50,27 @@ const ImageList = ({ uploadCompleted }) => {
 
     return (
         <div>
-            {images.length > 0 ? (
-                images.map((image) => (
-                    <div key={image.id}>
-                        <img src={image.url} alt={image.description} width="100" />
-                        <p>{image.description}</p>
+            <div className={style.gridContainer} >
+                {images.length > 0 ? (
+                    images.map((image) => (
+                        <div key={image.id} className={style.gridItem} onClick={() => openModal(image)} class="framed contains-code">
+                            <img src={image.url} alt={image.description} className={style.image} />
+                            <p className={style.description}>{image.description}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No images to display</p>
+                )}
+            </div>
+
+            {selectedImage && (
+                <div className={style.modal} onClick={closeModal}>
+                    <div className={style.modalContent} onClick={(e) => e.stopPropagation()} >
+                        <span className={style.closeBtn} onClick={closeModal}>&times;</span>
+                        <img src={selectedImage.url} alt={selectedImage.description} className={style.modalImage} />
+                        <p className={style.modalDescription}>{selectedImage.description}</p>
                     </div>
-                ))
-            ) : (
-                <p>No images to display</p>
+                </div>
             )}
         </div>
     );

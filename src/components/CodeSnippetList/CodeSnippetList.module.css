@@ -1,0 +1,13 @@
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 350px);
+    gap: 10px;
+    justify-content: center;
+    padding: 10px;
+}
+
+.gridItem {
+    width: 200px;
+    height: 300px;
+    
+}

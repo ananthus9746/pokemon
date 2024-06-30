@@ -3,7 +3,7 @@ import { collection, query, orderBy, getDocs } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-
+import style from './CodeSnippetList.module.css'
 const CodeSnippetList = ({ uploadCompleted }) => {
     const [snippets, setSnippets] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -36,10 +36,10 @@ const CodeSnippetList = ({ uploadCompleted }) => {
     }
 
     return (
-        <div>
+        <div className={style.gridContainer} >
             {snippets.length > 0 ? (
                 snippets.map((snippet) => (
-                    <div key={snippet.id} >
+                    <div key={snippet.id} className={style.gridItem} class="framed contains-code">
                         <h3>{snippet.description}</h3>
                         <SyntaxHighlighter wrapLines="true" language="javascript"
                         //  style={dark}
